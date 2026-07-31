@@ -1,112 +1,167 @@
 <!DOCTYPE html>
+<!--
+  Kula Revise lesson engine, sunset clause skin.
+
+  Mechanics never change per series. Copy this file, repaint the variables in
+  :root and body.bright, and leave everything else alone.
+
+  Step types, all driven from the content JSON:
+    story      animated hook: marker, place, lines that fade up one at a time
+    narrative  a card of prose, which may carry a carousel, diagram, figure,
+               bullet list, stat strip, memory box or key terms
+    source     a card plus an explainer or document panel with an expander
+    question   multiple choice, or mode "order", or mode "sort"
+    summary    the running summary on a screen of its own
+    essay      the assembled skeleton, capstone only
+
+  Question text, options and explanations may use {opt0}, {opt1} and so on.
+  The renderer swaps each for the letter that option carries after the shuffle,
+  so nothing ever refers to an option by position.
+
+  Tokens replaced at build time: LESSON_TITLE, TOPIC, EYEBROW, SUBTITLE, INTRO,
+  START_FOOTER, RESULTS_EYEBROW, CLOSE_LABEL, CLOSE_BODY, RESULTS_FOOTER, SKIP_TO.
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Getting to the Vote | The coming of democracy | Kula Revise</title>
 <style>
+  /* ================= PALETTE AND TYPE ================= */
   :root {
-    /* Sunset clause: dark. Ink blue ground, two accents. */
-    --paper: #101E33;     /* page ground */
-    --sheet: #17293F;     /* card sheet */
-    --white: #1D3149;     /* inner panels, sources, explanations */
-    --ink: #E9EDF2;       /* text */
-    --ink-soft: #9FADC0;
-    --flame: #E4703A;     /* accent one: navigation and emphasis */
-    --on-flame: #101E33;  /* text on a solid flame block */
-    --leaf: #86C2A4;      /* accent two: anything the learner earned */
-    --on-leaf: #101E33;   /* text on a solid leaf block */
-    --hair: rgba(233,237,242,0.18);
-    --rail: rgba(233,237,242,0.12);
-    --tint: rgba(134,194,164,0.09);
-    --tint-rule: rgba(134,194,164,0.40);
-    --slot-bg: rgba(233,237,242,0.04);
-    --chipA-bg: rgba(228,112,58,0.20); --chipA-fg: #F0A87E;
-    --chipB-bg: rgba(146,178,214,0.16); --chipB-fg: #A8C4E4;
-    --chipN-bg: rgba(233,237,242,0.07); --chipN-fg: #A9B6C6;
-    --ev3-bg: rgba(134,194,164,0.14); --ev3-fg: #86C2A4;
-    --ok-bg: rgba(134,194,164,0.16);
-    --bad-bg: rgba(159,173,192,0.10); --bad-border: #7C8AA0;
-    --btn-hover: #C55D2B;
-    --start-hover: #24384F;
-    --sans: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --serif: Georgia, 'Times New Roman', serif;
-  }
+      /* Sunset clause: dark. Ink blue ground, two accents. */
+      --paper: #101E33;     /* page ground */
+      --sheet: #17293F;     /* card sheet */
+      --white: #1D3149;     /* inner panels, sources, explanations */
+      --ink: #E9EDF2;       /* text */
+      --ink-soft: #9FADC0;
+      --flame: #E4703A;     /* accent one: navigation and emphasis */
+      --on-flame: #101E33;  /* text on a solid flame block */
+      --leaf: #86C2A4;      /* accent two: anything the learner earned */
+      --on-leaf: #101E33;   /* text on a solid leaf block */
+      --hair: rgba(233,237,242,0.18);
+      --rail: rgba(233,237,242,0.12);
+      --tint: rgba(134,194,164,0.09);
+      --tint-rule: rgba(134,194,164,0.40);
+      --slot-bg: rgba(233,237,242,0.04);
+      --chipA-bg: rgba(228,112,58,0.20); --chipA-fg: #F0A87E;
+      --chipB-bg: rgba(146,178,214,0.16); --chipB-fg: #A8C4E4;
+      --chipN-bg: rgba(233,237,242,0.07); --chipN-fg: #A9B6C6;
+      --ev3-bg: rgba(134,194,164,0.14); --ev3-fg: #86C2A4;
+      --ok-bg: rgba(134,194,164,0.16);
+      --bad-bg: rgba(159,173,192,0.10); --bad-border: #7C8AA0;
+      --btn-hover: #C55D2B;
+      --start-hover: #24384F;
+      --sans: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --serif: Georgia, 'Times New Roman', serif;
+    }
   /* Bright light inversion, kept but not exposed. Add class "bright" to body to switch. */
-  body.bright {
-    --paper: #F1EEE7;
-    --sheet: #FAF8F3;
-    --white: #FFFDF8;
-    --ink: #14243E;
-    --ink-soft: #5A6779;
-    --flame: #B4501B;
-    --on-flame: #FFFDF8;
-    --leaf: #2E7D5B;
-    --on-leaf: #FFFDF8;
-    --hair: rgba(20,36,62,0.18);
-    --rail: rgba(20,36,62,0.12);
-    --tint: rgba(46,125,91,0.07);
-    --tint-rule: rgba(46,125,91,0.35);
-    --slot-bg: rgba(255,255,255,0.5);
-    --chipA-bg: #F5E2D3; --chipA-fg: #8A3A0C;
-    --chipB-bg: #DCE5F0; --chipB-fg: #33415A;
-    --chipN-bg: #E5E3DC; --chipN-fg: #4E5666;
-    --ev3-bg: #DCEDE3; --ev3-fg: #236043;
-    --ok-bg: rgba(46,125,91,0.12);
-    --bad-bg: rgba(20,36,62,0.06); --bad-border: #94A0B0;
-    --btn-hover: #96410F;
-    --start-hover: #0B182B;
-  }
-  .flourish .rule-ink { stroke: var(--ink); }
-  .flourish .rule-accent { stroke: var(--flame); }
-  .flourish .dot { fill: var(--flame); }
+    body.bright {
+      --paper: #F1EEE7;
+      --sheet: #FAF8F3;
+      --white: #FFFDF8;
+      --ink: #14243E;
+      --ink-soft: #5A6779;
+      --flame: #B4501B;
+      --on-flame: #FFFDF8;
+      --leaf: #2E7D5B;
+      --on-leaf: #FFFDF8;
+      --hair: rgba(20,36,62,0.18);
+      --rail: rgba(20,36,62,0.12);
+      --tint: rgba(46,125,91,0.07);
+      --tint-rule: rgba(46,125,91,0.35);
+      --slot-bg: rgba(255,255,255,0.5);
+      --chipA-bg: #F5E2D3; --chipA-fg: #8A3A0C;
+      --chipB-bg: #DCE5F0; --chipB-fg: #33415A;
+      --chipN-bg: #E5E3DC; --chipN-fg: #4E5666;
+      --ev3-bg: #DCEDE3; --ev3-fg: #236043;
+      --ok-bg: rgba(46,125,91,0.12);
+      --bad-bg: rgba(20,36,62,0.06); --bad-border: #94A0B0;
+      --btn-hover: #96410F;
+      --start-hover: #0B182B;
+    }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    min-height: 100vh;
-    background: var(--paper);
-    padding: 1.6rem 1rem 3rem;
-    font-family: var(--serif);
-    color: var(--ink);
-    line-height: 1.6;
-  }
   .container { max-width: 720px; margin: 0 auto; }
+  /* sources set as typed minutes with a clause marker in the left margin */
+    .source { background: var(--white); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); padding: 1.15rem 1.2rem 1.2rem 2.9rem; margin: 1.1rem 0; position: relative; }
+  /* --- ordering and sorting --- */
+    .ord-strip { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 0.9rem; }
+  /* --- carousel --- */
+    .car { margin: 1.1rem 0 0.4rem; }
 
+  body {
+      min-height: 100vh;
+      background: var(--paper);
+      padding: 1.6rem 1rem 3rem;
+      font-family: var(--serif);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+  /* ================= PAGE FURNITURE ================= */
   .top-bar { margin-bottom: 1.6rem; }
   .top-meta { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 0.5rem; gap: 1rem; flex-wrap: wrap; }
   .top-count { color: var(--ink-soft); font-weight: 400; letter-spacing: 0.04em; text-transform: none; }
   .track { height: 2px; background: var(--rail); overflow: hidden; }
   .fill { height: 100%; background: var(--flame); transition: width 0.35s ease; width: 0%; }
+  .nav { display: flex; justify-content: space-between; gap: 0.8rem; margin-top: 0.4rem; }
+  .ord-slot.filled { border-style: solid; background: var(--white); }
+  .quiet { color: var(--ink-soft); }
+  .quiet.pull { border-left-color: var(--hair); }
+  .hidden { display: none !important; }
+  .footer { text-align: center;  font-size: 0.76rem; color: var(--ink-soft); margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid var(--hair); line-height: 1.65; }
 
-  .header-block { text-align: center; margin-bottom: 2rem; }
+  /* ================= COVER ================= */
+  .flourish .rule-ink { stroke: var(--ink); }
+  .flourish .rule-accent { stroke: var(--flame); }
+  .flourish .dot { fill: var(--flame); }
   .flourish { display: block; margin: 0 auto 1.3rem; width: 100%; max-width: 260px; height: 26px; }
-  .eyebrow { font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 0.85rem; }
-  .masthead { font-family: var(--sans); font-size: clamp(1.9rem,5.4vw,2.9rem); font-weight: 600; line-height: 1.14; letter-spacing: -0.015em; }
-  .sub { font-size: 0.98rem; color: var(--ink-soft); margin-top: 0.6rem; }
+  .cover { min-height: 82vh; display: flex; flex-direction: column; justify-content: center; text-align: center; padding: 1rem 0 2rem; }
+  .cover-eyebrow { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.34em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 1.4rem; }
+  .cover-title { font-family: var(--sans); font-size: clamp(2.4rem, 9vw, 4rem); font-weight: 600; line-height: 1.04; letter-spacing: -0.02em; color: var(--ink); }
+  .cover .flourish { margin: 1.5rem auto 1.4rem; }
+  .cover-line { font-family: var(--serif); font-style: italic; font-size: clamp(1.05rem, 3vw, 1.4rem); color: var(--ink-soft); line-height: 1.6; max-width: 32rem; margin: 0 auto; }
+  .cover-sub { font-family: var(--sans); font-size: 0.76rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); margin-top: 1.6rem; }
+  .cover-actions { margin-top: 2.2rem; display: flex; flex-direction: column; align-items: center; gap: 0.7rem; }
+  .btn-begin { padding: 1rem 3rem; font-size: 1.05rem; }
+  .cover .btn-skip { width: auto; justify-content: center; }
 
-  .intro-box { background: var(--sheet); border-top: 2px solid var(--ink); padding: 1.2rem 1.35rem 1.35rem; margin-bottom: 1.3rem; }
-  .intro-label { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 0.55rem; }
-  .intro-text { line-height: 1.7; font-size: 0.98rem; }
-
-  .key-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 0.7rem; margin-bottom: 1.7rem; }
-  .key-item { display: flex; flex-direction: column; gap: 0.45rem; padding: 0.85rem; background: var(--sheet); border-top: 1px solid var(--hair); }
-  .chip { display: inline-block; padding: 0.22rem 0.62rem; font-family: var(--sans); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; width: fit-content; }
-  .chip-argue { background: var(--chipA-bg); color: var(--chipA-fg); }
-  .chip-evidence { background: var(--chipB-bg); color: var(--chipB-fg); }
-  .chip-weigh { background: var(--leaf); color: var(--on-leaf); }
-  .chip-instinct { background: var(--chipN-bg); color: var(--chipN-fg); }
-  .key-desc { font-size: 0.82rem; color: var(--ink-soft); }
-
+  /* ================= CARDS AND PROSE ================= */
   .card { background: var(--sheet); border-top: 2px solid var(--ink); padding: 1.5rem 1.4rem 1.6rem; margin-bottom: 1.2rem; }
-  .stage-tag { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 0.9rem; }
   .card h2 { font-family: var(--sans); font-size: 1.38rem; font-weight: 600; line-height: 1.25; margin-bottom: 0.9rem; letter-spacing: -0.01em; }
   .card p { font-size: 1rem; line-height: 1.72; margin-bottom: 0.9rem; }
   .card p:last-child { margin-bottom: 0; }
   .pull { border-left: 3px solid var(--flame); padding-left: 1rem; color: var(--ink); margin: 1.1rem 0; }
-  .scenario { background: var(--white); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); padding: 1.15rem 1.2rem; margin: 1.1rem 0 0.2rem; font-size: 1.02rem; line-height: 1.72; }
-  .scenario-meta { padding: 0.55rem 0 0; font-size: 0.78rem; color: var(--ink-soft); text-align: right; }
+  .facts { margin: 1rem 0 0.4rem; padding-left: 1.15rem; }
+  .facts li { font-size: 0.97rem; line-height: 1.7; margin-bottom: 0.5rem; }
+  .key { color: var(--leaf); font-weight: 700; }
+  .recap { background: var(--sheet); border-top: 2px solid var(--leaf); padding: 1.35rem 1.4rem 1.5rem; }
+  .recap h2 { font-family: var(--sans); font-size: 1.28rem; font-weight: 600; margin-bottom: 0.9rem; }
+  .recap ul { margin: 0; padding-left: 1.15rem; }
+  .recap li { font-size: 0.97rem; line-height: 1.75; margin-bottom: 0.55rem; }
+  .recap li:last-child { margin-bottom: 0; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: 0.7rem; margin: 1.1rem 0 0.5rem; }
+  .stat { background: var(--sheet); border-top: 2px solid var(--flame); padding: 0.9rem 0.8rem; text-align: center; }
+  .stat-n {  font-size: 1.7rem; font-weight: 700; color: var(--ink); line-height: 1; }
+  .stat-l { font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin-top: 0.45rem; line-height: 1.4; }
+  .blist { list-style: none; margin: 1rem 0 0.4rem; padding: 0; }
+  .blist li { position: relative; padding-left: 1.5rem; font-size: 1rem; line-height: 1.72; margin-bottom: 0.75rem; }
+  .blist li:last-child { margin-bottom: 0; }
+  .blist li::before { content: ""; position: absolute; left: 0; top: 0.62rem; width: 8px; height: 8px; background: var(--flame); }
+  .blist li strong { color: var(--leaf); }
+  .blist.leaf li::before { background: var(--leaf); }
 
-  /* sources set as typed minutes with a clause marker in the left margin */
-  .source { background: var(--white); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); padding: 1.15rem 1.2rem 1.2rem 2.9rem; margin: 1.1rem 0; position: relative; }
+  /* ================= STORY HOOK ================= */
+  .story { padding-top: 0.6rem; }
+  .story-marker { text-align: center; margin-bottom: 0.4rem; }
+  .story-num {  font-size: clamp(2.4rem, 8vw, 3.6rem); font-weight: 700; color: var(--flame); line-height: 1; letter-spacing: -0.02em; }
+  .story-unit { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-soft); margin-top: 0.35rem; }
+  .story-rule { height: 1px; background: var(--hair); margin: 1.2rem 0 1.6rem; }
+  .story-line { font-size: 1.12rem; line-height: 1.85; color: var(--ink); opacity: 0; transform: translateY(6px); transition: opacity 0.5s ease, transform 0.5s ease; margin-bottom: 0.9rem; }
+  .story-line.vis { opacity: 1; transform: translateY(0); }
+  .story-line.last { color: var(--leaf); font-style: italic; }
+
+  /* ================= SOURCES AND FIGURES ================= */
   .source .clause { position: absolute; left: 0.85rem; top: 1.15rem;  font-size: 0.74rem; font-weight: 600; color: var(--flame); letter-spacing: 0.02em; }
   .source-attr {  font-size: 0.76rem; color: var(--ink-soft); margin-bottom: 0.7rem; line-height: 1.55; }
   .source-body { font-size: 0.97rem; line-height: 1.75; }
@@ -120,8 +175,6 @@
   .evtag.home { background: var(--chipA-bg); color: var(--chipA-fg); }
   .evtag.ground { background: var(--chipB-bg); color: var(--chipB-fg); }
   .evtag.exit { background: var(--ev3-bg); color: var(--ev3-fg); }
-
-  .imgslot { margin: 1rem 0 0.2rem; padding: 1.4rem 1rem; border: 1px dashed var(--hair); text-align: center;  font-size: 0.79rem; color: var(--ink-soft); background: var(--slot-bg); }
   .figure { margin: 1rem 0 0.3rem; }
   .figure img { display: block; height: auto; border: 1px solid var(--hair); margin: 0 auto; }
   .figure.wide img { width: 100%; max-width: 460px; }
@@ -129,6 +182,13 @@
   .figure svg { display: block; width: 100%; height: auto; }
   .figure figcaption {  font-size: 0.76rem; color: var(--ink-soft); margin-top: 0.5rem; line-height: 1.55; text-align: center; }
 
+  /* ================= QUESTIONS ================= */
+  .chip { display: inline-block; padding: 0.22rem 0.62rem; font-family: var(--sans); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; width: fit-content; }
+  .chip-argue { background: var(--chipA-bg); color: var(--chipA-fg); }
+  .chip-evidence { background: var(--chipB-bg); color: var(--chipB-fg); }
+  .chip-weigh { background: var(--leaf); color: var(--on-leaf); }
+  .chip-instinct { background: var(--chipN-bg); color: var(--chipN-fg); }
+  .stage-tag { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 0.9rem; }
   .q-text { font-size: 1.14rem; line-height: 1.5; margin-bottom: 1.15rem; }
   .options { display: flex; flex-direction: column; gap: 0.55rem; margin-bottom: 1.15rem; }
   .option { display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.95rem 1.05rem; background: var(--paper); border: 1px solid var(--hair); cursor: pointer; font-family: inherit; text-align: left; font-size: 0.95rem; line-height: 1.55; color: var(--ink); transition: all 0.18s; width: 100%; }
@@ -144,56 +204,48 @@
   .explanation { background: var(--white); border-top: 1px solid var(--hair); border-left: 3px solid var(--flame); padding: 1.05rem 1.15rem; margin-bottom: 0.3rem; }
   .expl-label { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 0.5rem; }
   .expl-text { line-height: 1.7; font-size: 0.93rem; }
-  .skill-callout { background: var(--tint); border-top: 1px solid var(--tint-rule); padding: 1rem 1.15rem; margin: 1.1rem 0; }
-  .skill-callout .expl-label { color: var(--leaf); }
-  .skill-list { margin: 0.5rem 0 0 0; padding-left: 1.1rem; }
-  .skill-list li { font-size: 0.92rem; line-height: 1.62; margin-bottom: 0.35rem; }
-
-  .nav { display: flex; justify-content: space-between; gap: 0.8rem; margin-top: 0.4rem; }
-  .btn-secondary { padding: 0.72rem 1.2rem; background: transparent; border: 1px solid var(--hair); color: var(--ink); font-family: var(--sans); font-size: 0.88rem; cursor: pointer; }
-  .btn-secondary:hover:not(:disabled) { background: var(--sheet); }
-  .btn-secondary:disabled { opacity: 0.35; cursor: not-allowed; }
-  .btn-primary { padding: 0.76rem 1.5rem; background: var(--flame); border: none; color: var(--on-flame); font-family: var(--sans); font-size: 0.93rem; cursor: pointer; font-weight: 600; }
-  .btn-primary:hover:not(:disabled) { background: var(--btn-hover); }
-  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
-  .btn-start { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.15rem 1.35rem; background: var(--white); color: var(--ink); border-top: 2px solid var(--flame); border: none; cursor: pointer; font-family: var(--sans); text-align: left; transition: all 0.2s; }
-  .btn-start:hover { background: var(--start-hover); transform: translateX(3px); }
-  .btn-start .st { font-size: 1.08rem; font-weight: 600; }
-  .btn-start .sa { font-size: 1.25rem; color: var(--flame); }
-
-  .btn-skip { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 0.6rem; padding: 0.85rem 1.35rem; background: transparent; border: 1px solid var(--hair); color: var(--ink-soft); cursor: pointer; font-family: var(--sans); text-align: left; transition: all 0.2s; }
-  .btn-skip:hover { color: var(--ink); border-color: var(--leaf); }
-  .btn-skip .sk-t { font-size: 0.92rem; }
-  .btn-skip .sk-a { font-size: 1.1rem; color: var(--leaf); }
-  .score-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 0.9rem; margin-bottom: 1.3rem; }
-  .score-block { background: var(--sheet); border-top: 2px solid var(--ink); padding: 1.25rem 0.8rem; text-align: center; }
-  .score-num { font-size: 2.4rem; font-weight: 700; color: var(--ink); line-height: 1; }
-  .score-num.red { color: var(--flame); }
-  .score-den { font-size: 1.05rem; color: var(--ink-soft); font-weight: 400; }
-  .score-label { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); margin-top: 0.5rem; font-weight: 600; }
-  .grade-desc { text-align: center; margin-bottom: 1.5rem; padding: 0 0.5rem; line-height: 1.68; }
-  .breakdown { background: var(--sheet); border-top: 2px solid var(--ink); padding: 1.25rem; margin-bottom: 1.3rem; }
-  .breakdown-label { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--leaf); font-weight: 600; margin-bottom: 1rem; text-align: center; }
-  .bd-row { display: grid; grid-template-columns: 1fr 110px 46px; gap: 0.7rem; align-items: center; margin-bottom: 0.7rem; font-size: 0.86rem; }
-  .bd-name { font-size: 0.92rem; }
-  .bd-bar { height: 8px; background: var(--rail); overflow: hidden; }
-  .bd-fill { height: 100%; background: var(--leaf); transition: width 0.4s; }
-  .bd-score { color: var(--ink-soft); text-align: right; font-weight: 700; }
-
-  .essaypanel { background: var(--tint); border-top: 1px solid var(--tint-rule); padding: 1.15rem 1.2rem; margin-top: 1.1rem; }
-  .essaypanel-label { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--leaf); font-weight: 600; margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.5rem; }
-  .essaypanel-label .tick { color: var(--leaf); font-size: 0.85rem; }
-  .essaypanel p { font-size: 0.92rem; line-height: 1.72; margin-bottom: 0.7rem; text-indent: 1.1rem; }
-  .essaypanel p:first-of-type { text-indent: 0; }
-  .essaypanel p:last-child { margin-bottom: 0; }
-  .finalessay { background: var(--white); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); padding: 1.5rem 1.4rem; margin: 1.1rem 0; }
-  .finalessay .fq {  font-weight: 600; color: var(--flame); font-size: 0.97rem; margin-bottom: 1rem; line-height: 1.5; padding-bottom: 0.9rem; border-bottom: 1px solid var(--hair); }
-  .finalessay p { font-size: 0.96rem; line-height: 1.78; margin-bottom: 0.9rem; text-indent: 1.2rem; }
-  .finalessay p:first-of-type { text-indent: 0; }
-  .finalessay p:last-child { margin-bottom: 0; }
   .qbox { background: var(--white); border-top: 1px solid var(--hair); border-left: 3px solid var(--flame); padding: 1.05rem 1.2rem; margin: 1.3rem 0 1.5rem; }
   .qbox .qlabel { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 0.5rem; }
   .qbox .qtext { font-size: 1.05rem; line-height: 1.55; }
+
+  /* ================= ORDER AND SORT ================= */
+  .ord-slot { display: flex; align-items: center; gap: 0.7rem; width: 100%; text-align: left; padding: 0.75rem 0.9rem; background: var(--paper); border: 1px solid var(--hair); font-size: 0.94rem; color: var(--ink); font-family: inherit; cursor: pointer; -webkit-user-select: none; user-select: none; }
+  .ord-slot .ord-txt { flex: 1; }
+  .ord-slot .ord-x { color: var(--ink-soft); font-size: 0.85rem; }
+  .ord-slot:disabled { cursor: default; }
+  .ord-slot.right { border-color: var(--leaf); background: var(--ok-bg); }
+  .ord-slot.wrong { border-color: var(--bad-border); background: var(--bad-bg); }
+  .ord-rank {  font-weight: 700; color: var(--flame); min-width: 1.2rem; }
+  .ord-pool { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1rem; }
+  .ord-chip { text-align: left; -webkit-user-select: none; user-select: none; padding: 0.8rem 0.95rem; background: var(--paper); border: 1px solid var(--hair); color: var(--ink); font-family: inherit; font-size: 0.94rem; line-height: 1.5; cursor: pointer; }
+  .ord-chip:hover:not(:disabled) { border-color: var(--leaf); background: var(--white); }
+  .ord-chip:disabled { opacity: 0.3; cursor: default; }
+  .ord-actions { display: flex; gap: 0.6rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+  .sort-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 1rem; }
+  .sort-col { background: var(--sheet); border-top: 2px solid var(--hair); padding: 0.8rem 0.7rem; min-height: 5rem; }
+  .sort-col h4 { font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--leaf); margin-bottom: 0.6rem; }
+  .sort-tag { display: block; width: 100%; text-align: left; font-size: 0.86rem; line-height: 1.45; padding: 0.5rem 0.6rem; margin-bottom: 0.4rem; background: var(--white); border: 1px solid var(--hair); color: var(--ink); }
+  .sort-tag.right { border-color: var(--leaf); background: var(--ok-bg); }
+  .sort-tag.wrong { border-color: var(--bad-border); background: var(--bad-bg); }
+  .sort-prompt {  font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 0.6rem; }
+
+  /* ================= CAROUSEL ================= */
+  .car [data-car-next] { border-color: var(--flame); color: var(--flame); }
+  .car-frame { background: var(--white); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); padding: 1.2rem 1.2rem 1.3rem; min-height: 8.5rem; }
+  .car-count { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 0.6rem; }
+  .car-body { font-size: 1rem; line-height: 1.72; }
+  .car-body strong { color: var(--leaf); }
+  .car-nav { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; margin-top: 0.7rem; }
+  .car-dots { display: flex; gap: 0.35rem; align-items: center; }
+  .car-hint { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+  .car-prompt { display: flex; align-items: baseline; gap: 0.5rem; font-family: var(--sans); font-size: 0.82rem; color: var(--flame); margin-bottom: 0.55rem; }
+  .car-prompt .cp-mark { font-size: 1rem; line-height: 1; }
+  .car-prompt.done { color: var(--leaf); }
+  .car-dot.read { background: var(--leaf); }
+  .car-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hair); border: none; padding: 0; cursor: pointer; }
+  .car-dot.on { background: var(--flame); }
+
+  /* ================= KEY TERMS AND MEMORY ================= */
   .terms { margin-top: 1.3rem; padding-top: 1rem; border-top: 1px solid var(--hair); }
   .terms-label { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--leaf); font-weight: 600; margin-bottom: 0.7rem; }
   .term-row { display: flex; flex-wrap: wrap; gap: 0.45rem; }
@@ -212,94 +264,61 @@
   .memory.open .memory-label.memory-toggle { margin-bottom: 0.7rem; }
   .memory p { font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.6rem; }
   .memory p:last-child { margin-bottom: 0; }
-  .facts { margin: 1rem 0 0.4rem; padding-left: 1.15rem; }
-  .facts li { font-size: 0.97rem; line-height: 1.7; margin-bottom: 0.5rem; }
-  .key { color: var(--leaf); font-weight: 700; }
-  .card p strong, .card li strong, .memory strong, .recap strong, .source-body strong, .scenario strong { color: var(--leaf); font-weight: 700; }
-  .recap { background: var(--sheet); border-top: 2px solid var(--leaf); padding: 1.35rem 1.4rem 1.5rem; }
-  .recap h2 { font-family: var(--sans); font-size: 1.28rem; font-weight: 600; margin-bottom: 0.9rem; }
-  .recap ul { margin: 0; padding-left: 1.15rem; }
-  .recap li { font-size: 0.97rem; line-height: 1.75; margin-bottom: 0.55rem; }
-  .recap li:last-child { margin-bottom: 0; }
-  .cover { min-height: 82vh; display: flex; flex-direction: column; justify-content: center; text-align: center; padding: 1rem 0 2rem; }
-  .cover-eyebrow { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.34em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 1.4rem; }
-  .cover-title { font-family: var(--sans); font-size: clamp(2.4rem, 9vw, 4rem); font-weight: 600; line-height: 1.04; letter-spacing: -0.02em; color: var(--ink); }
-  .cover .flourish { margin: 1.5rem auto 1.4rem; }
-  .cover-line { font-family: var(--serif); font-style: italic; font-size: clamp(1.05rem, 3vw, 1.4rem); color: var(--ink-soft); line-height: 1.6; max-width: 32rem; margin: 0 auto; }
-  .cover-sub { font-family: var(--sans); font-size: 0.76rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); margin-top: 1.6rem; }
-  .cover-actions { margin-top: 2.2rem; display: flex; flex-direction: column; align-items: center; gap: 0.7rem; }
-  .btn-begin { padding: 1rem 3rem; font-size: 1.05rem; }
-  .cover .btn-skip { width: auto; justify-content: center; }
-  .story { padding-top: 0.6rem; }
-  .story-marker { text-align: center; margin-bottom: 0.4rem; }
-  .story-num {  font-size: clamp(2.4rem, 8vw, 3.6rem); font-weight: 700; color: var(--flame); line-height: 1; letter-spacing: -0.02em; }
-  .story-unit { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-soft); margin-top: 0.35rem; }
-  .story-rule { height: 1px; background: var(--hair); margin: 1.2rem 0 1.6rem; }
-  .story-line { font-size: 1.12rem; line-height: 1.85; color: var(--ink); opacity: 0; transform: translateY(6px); transition: opacity 0.5s ease, transform 0.5s ease; margin-bottom: 0.9rem; }
-  .story-line.vis { opacity: 1; transform: translateY(0); }
-  .story-line.last { color: var(--leaf); font-style: italic; }
+
+  /* ================= RUNNING SUMMARY ================= */
+  .essaypanel { background: var(--tint); border-top: 1px solid var(--tint-rule); padding: 1.15rem 1.2rem; margin-top: 1.1rem; }
+  .essaypanel p { font-size: 0.92rem; line-height: 1.72; margin-bottom: 0.7rem; text-indent: 1.1rem; }
+  .essaypanel p:first-of-type { text-indent: 0; }
+  .essaypanel p:last-child { margin-bottom: 0; }
+  .finalessay { background: var(--white); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); padding: 1.5rem 1.4rem; margin: 1.1rem 0; }
+  .finalessay .fq {  font-weight: 600; color: var(--flame); font-size: 0.97rem; margin-bottom: 1rem; line-height: 1.5; padding-bottom: 0.9rem; border-bottom: 1px solid var(--hair); }
+  .finalessay p { font-size: 0.96rem; line-height: 1.78; margin-bottom: 0.9rem; text-indent: 1.2rem; }
+  .finalessay p:first-of-type { text-indent: 0; }
+  .finalessay p:last-child { margin-bottom: 0; }
+
+  /* ================= RESULTS ================= */
+  .header-block { text-align: center; margin-bottom: 2rem; }
+  .eyebrow { font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 0.85rem; }
+  .masthead { font-family: var(--sans); font-size: clamp(1.9rem,5.4vw,2.9rem); font-weight: 600; line-height: 1.14; letter-spacing: -0.015em; }
+  .sub { font-size: 0.98rem; color: var(--ink-soft); margin-top: 0.6rem; }
+  .score-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 0.9rem; margin-bottom: 1.3rem; }
+  .score-block { background: var(--sheet); border-top: 2px solid var(--ink); padding: 1.25rem 0.8rem; text-align: center; }
+  .score-num { font-size: 2.4rem; font-weight: 700; color: var(--ink); line-height: 1; }
+  .score-num.red { color: var(--flame); }
+  .score-den { font-size: 1.05rem; color: var(--ink-soft); font-weight: 400; }
+  .score-label { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); margin-top: 0.5rem; font-weight: 600; }
+  .grade-desc { text-align: center; margin-bottom: 1.5rem; padding: 0 0.5rem; line-height: 1.68; }
+  .breakdown { background: var(--sheet); border-top: 2px solid var(--ink); padding: 1.25rem; margin-bottom: 1.3rem; }
+  .breakdown-label { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--leaf); font-weight: 600; margin-bottom: 1rem; text-align: center; }
+  .bd-row { display: grid; grid-template-columns: 1fr 110px 46px; gap: 0.7rem; align-items: center; margin-bottom: 0.7rem; font-size: 0.86rem; }
+  .bd-name { font-size: 0.92rem; }
+  .bd-bar { height: 8px; background: var(--rail); overflow: hidden; }
+  .bd-fill { height: 100%; background: var(--leaf); transition: width 0.4s; }
+  .bd-score { color: var(--ink-soft); text-align: right; font-weight: 700; }
+
+  /* ================= BUTTONS ================= */
+  .btn-secondary { padding: 0.72rem 1.2rem; background: transparent; border: 1px solid var(--hair); color: var(--ink); font-family: var(--sans); font-size: 0.88rem; cursor: pointer; }
+  .btn-secondary:hover:not(:disabled) { background: var(--sheet); }
+  .btn-secondary:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-primary { padding: 0.76rem 1.5rem; background: var(--flame); border: none; color: var(--on-flame); font-family: var(--sans); font-size: 0.93rem; cursor: pointer; font-weight: 600; }
+  .btn-primary:hover:not(:disabled) { background: var(--btn-hover); }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-skip { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 0.6rem; padding: 0.85rem 1.35rem; background: transparent; border: 1px solid var(--hair); color: var(--ink-soft); cursor: pointer; font-family: var(--sans); text-align: left; transition: all 0.2s; }
+  .btn-skip:hover { color: var(--ink); border-color: var(--leaf); }
+  .btn-skip .sk-t { font-size: 0.92rem; }
+  .btn-skip .sk-a { font-size: 1.1rem; color: var(--leaf); }
+  .btn-small { font-family: var(--sans); font-size: 0.82rem; padding: 0.55rem 1rem; background: transparent; border: 1px solid var(--hair); color: var(--ink); cursor: pointer; }
+  .btn-small:hover:not(:disabled) { border-color: var(--leaf); }
+  .btn-small:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* ================= POP UPS ================= */
   .modal-back { position: fixed; inset: 0; background: rgba(8,16,28,0.72); display: flex; align-items: center; justify-content: center; padding: 1.2rem; z-index: 50; }
   .modal { background: var(--sheet); border-top: 3px solid var(--flame); max-width: 24rem; width: 100%; padding: 1.6rem 1.5rem 1.5rem; text-align: center; }
   .modal-label { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--leaf); font-weight: 600; margin-bottom: 0.7rem; }
   .modal h3 { font-family: var(--sans); font-size: 1.2rem; font-weight: 600; margin-bottom: 0.7rem; }
   .modal p { font-size: 1rem; line-height: 1.7; color: var(--ink); margin-bottom: 1.3rem; }
-  /* --- ordering and sorting --- */
-  .ord-strip { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 0.9rem; }
-  .ord-slot { display: flex; align-items: center; gap: 0.7rem; width: 100%; text-align: left; padding: 0.75rem 0.9rem; background: var(--paper); border: 1px solid var(--hair); font-size: 0.94rem; color: var(--ink); font-family: inherit; cursor: pointer; -webkit-user-select: none; user-select: none; }
-  .ord-slot .ord-txt { flex: 1; }
-  .ord-slot .ord-x { color: var(--ink-soft); font-size: 0.85rem; }
-  .ord-slot:disabled { cursor: default; }
-  .ord-slot.filled { border-style: solid; background: var(--white); }
-  .ord-slot.right { border-color: var(--leaf); background: var(--ok-bg); }
-  .ord-slot.wrong { border-color: var(--bad-border); background: var(--bad-bg); }
-  .ord-rank {  font-weight: 700; color: var(--flame); min-width: 1.2rem; }
-  .ord-pool { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1rem; }
-  .ord-chip { text-align: left; -webkit-user-select: none; user-select: none; padding: 0.8rem 0.95rem; background: var(--paper); border: 1px solid var(--hair); color: var(--ink); font-family: inherit; font-size: 0.94rem; line-height: 1.5; cursor: pointer; }
-  .ord-chip:hover:not(:disabled) { border-color: var(--leaf); background: var(--white); }
-  .ord-chip:disabled { opacity: 0.3; cursor: default; }
-  .ord-actions { display: flex; gap: 0.6rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
-  .btn-small { font-family: var(--sans); font-size: 0.82rem; padding: 0.55rem 1rem; background: transparent; border: 1px solid var(--hair); color: var(--ink); cursor: pointer; }
-  .btn-small:hover:not(:disabled) { border-color: var(--leaf); }
-  .btn-small:disabled { opacity: 0.35; cursor: not-allowed; }
-  .sort-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 1rem; }
-  .sort-col { background: var(--sheet); border-top: 2px solid var(--hair); padding: 0.8rem 0.7rem; min-height: 5rem; }
-  .sort-col h4 { font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--leaf); margin-bottom: 0.6rem; }
-  .sort-tag { display: block; width: 100%; text-align: left; font-size: 0.86rem; line-height: 1.45; padding: 0.5rem 0.6rem; margin-bottom: 0.4rem; background: var(--white); border: 1px solid var(--hair); color: var(--ink); }
-  .sort-tag.right { border-color: var(--leaf); background: var(--ok-bg); }
-  .sort-tag.wrong { border-color: var(--bad-border); background: var(--bad-bg); }
-  .sort-prompt {  font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 0.6rem; }
-  /* --- carousel --- */
-  .car { margin: 1.1rem 0 0.4rem; }
-  .car [data-car-next] { border-color: var(--flame); color: var(--flame); }
-  .car.car-done [data-car-next] { border-color: var(--hair); color: var(--ink); }
-  .car-frame { background: var(--white); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); padding: 1.2rem 1.2rem 1.3rem; min-height: 8.5rem; }
-  .car-count { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--flame); font-weight: 600; margin-bottom: 0.6rem; }
-  .car-body { font-size: 1rem; line-height: 1.72; }
-  .car-body strong { color: var(--leaf); }
-  .car-nav { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; margin-top: 0.7rem; }
-  .car-dots { display: flex; gap: 0.35rem; align-items: center; }
-  .car-hint { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
-  .car-prompt { display: flex; align-items: baseline; gap: 0.5rem; font-family: var(--sans); font-size: 0.82rem; color: var(--flame); margin-bottom: 0.55rem; }
-  .car-prompt .cp-mark { font-size: 1rem; line-height: 1; }
-  .car-prompt.done { color: var(--leaf); }
-  .car-dot.read { background: var(--leaf); }
-  .car-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hair); border: none; padding: 0; cursor: pointer; }
-  .car-dot.on { background: var(--flame); }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: 0.7rem; margin: 1.1rem 0 0.5rem; }
-  .stat { background: var(--sheet); border-top: 2px solid var(--flame); padding: 0.9rem 0.8rem; text-align: center; }
-  .stat-n {  font-size: 1.7rem; font-weight: 700; color: var(--ink); line-height: 1; }
-  .stat-l { font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin-top: 0.45rem; line-height: 1.4; }
-  .blist { list-style: none; margin: 1rem 0 0.4rem; padding: 0; }
-  .blist li { position: relative; padding-left: 1.5rem; font-size: 1rem; line-height: 1.72; margin-bottom: 0.75rem; }
-  .blist li:last-child { margin-bottom: 0; }
-  .blist li::before { content: ""; position: absolute; left: 0; top: 0.62rem; width: 8px; height: 8px; background: var(--flame); }
-  .blist li strong { color: var(--leaf); }
-  .blist.leaf li::before { background: var(--leaf); }
-  .quiet { color: var(--ink-soft); }
-  .quiet.pull { border-left-color: var(--hair); }
-  .hidden { display: none !important; }
-  .footer { text-align: center;  font-size: 0.76rem; color: var(--ink-soft); margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid var(--hair); line-height: 1.65; }
-</style>
+
+  </style>
 </head>
 <body>
 <div class="container">
@@ -430,7 +449,7 @@ const FLOW = [
       "Telling that party they will be blamed if the election fails"
     ],
     "correct": 0,
-    "explanation": "{opt0}. Someone who can wreck it has to be given a reason to stay. That is what the last months before the election looked like, and you are about to see what that cost them."
+    "explanation": "{opt0}. Someone who can wreck it has to be given a reason to stay. That's what the last months before the election looked like, and it cost the people who won."
   },
   {
     "type": "question",
@@ -501,7 +520,7 @@ const FLOW = [
       "The ANC agreed that the National Party would keep control of both the police and the army"
     ],
     "correct": 0,
-    "explanation": "{opt0}, and the five per cent is the detail that shows you know the clause. {opt1} says the National Party was handed a fixed share. It was not: it had to win its seats. Quote the five per cent and the marker can see you know the clause. Describe it loosely and you get credit for knowing the topic, not for knowing the detail."
+    "explanation": "{opt0}, and the five per cent is the detail that shows you know the clause rather than the general idea of it. {opt1} says the National Party was handed a fixed share. It wasn't: it had to win its seats."
   },
   {
     "type": "question",
@@ -515,7 +534,7 @@ const FLOW = [
       "Completely, because it proves the ANC never intended to change very much at all"
     ],
     "correct": 0,
-    "explanation": "{opt0}, and who proposed it is what makes this strong. The leader of the Communist Party suggested keeping apartheid officials in their jobs. {opt1} says it cost the ANC nothing, which ignores how angry its own supporters were. Name Slovo and his party. That one detail earns you the mark, and three general sentences will not."
+    "explanation": "{opt0}, and who proposed it is what makes this strong. The leader of the Communist Party suggested keeping apartheid officials in their jobs. {opt1} says it cost the ANC nothing, which ignores how angry its own supporters were."
   },
   {
     "type": "narrative",
@@ -572,7 +591,7 @@ const FLOW = [
       "Running the election itself and counting the votes on behalf of the parties"
     ],
     "correct": 0,
-    "explanation": "{opt0}. The ANC argued that the National Party could not both run the country and contest the election against it. {opt3} is the Independent Electoral Commission, which is the body most often confused with this one. Name both and what each did, and you show the marker that the transfer of power started before voting day."
+    "explanation": "{opt0}. The ANC argued that the National Party couldn't both run the country and contest the election against it. {opt3} is the Independent Electoral Commission, which is the body most often confused with this one. The transfer of power started before voting day."
   },
   {
     "type": "question",
@@ -586,7 +605,7 @@ const FLOW = [
       "The Council shows that the National Party had already surrendered power by December 1993"
     ],
     "correct": 0,
-    "explanation": "{opt0} names what was given up and when, which is exactly your definition of political will. {opt1} is the trap: true, and it stops there. {opt3} overstates it, because De Klerk was still president and the cabinet still governed. Tie an event back to your definition and the marker sees an argument being built."
+    "explanation": "{opt0} names what was given up and when, which is exactly what political will means here. {opt1} is true and stops there. {opt3} overstates it, because De Klerk was still president and the cabinet still governed."
   },
   {
     "type": "narrative",
@@ -626,7 +645,7 @@ const FLOW = [
       "Shell House, Johannesburg",
       "Car bombs in Johannesburg and at Jan Smuts Airport"
     ],
-    "explanation": "July 1993, then December 1993, then March 1994 twice, then the week of the vote in April 1994. The order is how you show the attacks kept coming after the constitution was agreed in November 1993. Without it the marker reads your paragraph as a list."
+    "explanation": "July 1993, then December 1993, then March 1994 twice, then the week of the vote in April 1994. The order is what shows the attacks kept coming after the constitution was agreed in November 1993."
   },
   {
     "type": "source",
@@ -665,7 +684,7 @@ const FLOW = [
       "Only the ANC genuinely wanted the election, and the others were dragged into it unwillingly"
     ],
     "correct": 0,
-    "explanation": "{opt0} finds the pattern across all four and says what it cost. That is what arguing does with a comparison. {opt1} is a correct list and nothing more. {opt3} says only the ANC wanted the election, and De Klerk called a referendum in 1992 to keep it alive. Compare, then judge. If you never judge the comparison, the marker reads it as description."
+    "explanation": "{opt0} finds the pattern across all four and says what it cost. That's what arguing does with a comparison. {opt1} is a correct list and nothing more. {opt3} says only the ANC wanted the election, and De Klerk called a referendum in 1992 to keep it alive."
   },
   {
     "type": "question",
@@ -679,7 +698,7 @@ const FLOW = [
       "It shows the election had been delayed repeatedly to wait for their agreement"
     ],
     "correct": 0,
-    "explanation": "{opt0}. Stickers had to be stuck on ballot papers that were already printed. An election run while Inkatha boycotted its own province would have been argued about from day one. That is how close this came to failing, and you can use it in your last paragraph."
+    "explanation": "{opt0}. Stickers had to be stuck on ballot papers that were already printed. An election run while Inkatha boycotted its own province would have been argued about from day one. That's how close this came to failing."
   },
   {
     "type": "narrative",
@@ -720,7 +739,7 @@ const FLOW = [
       "Fully, since the National Party and Inkatha had no role after the election"
     ],
     "correct": 0,
-    "explanation": "{opt0}. The ANC won the vote comfortably and still shared the cabinet with the party that had run apartheid. Holding both of those at once is what this question is testing. {opt1} and {opt3} forget the sunset clause. Answer without a qualifier and you cannot reach the top marks."
+    "explanation": "{opt0}. The ANC won the vote comfortably and still shared the cabinet with the party that had run apartheid. Both of those are true at once. {opt1} and {opt3} forget the sunset clause."
   },
   {
     "type": "question",
@@ -734,7 +753,7 @@ const FLOW = [
       "Not at all, because the Freedom Front had already registered for the election"
     ],
     "correct": 0,
-    "explanation": "{opt0}. Watch the two halves. Force failed publicly, and one part of the right drew the obvious conclusion. {opt1} is not wrong about the bombs, which is what makes it tempting, but it misses the split. {opt2} goes too far, because the bombs in April prove some of the right never gave up. Say which part changed and which did not, and you show the marker judgement."
+    "explanation": "{opt0}. Force failed publicly, and one part of the right drew the obvious conclusion. {opt1} isn't wrong about the bombs, which is what makes it tempting, but it misses the split. {opt2} goes too far, because the April bombs show some of the right never gave up."
   },
   {
     "type": "narrative",
@@ -755,7 +774,7 @@ const FLOW = [
       "The election happened because the right wing had been beaten at Bophuthatswana, which removed the last serious obstacle standing in the way of a settlement"
     ],
     "correct": 0,
-    "explanation": "{opt0} takes the objection from Lesson 3 and answers it with a pattern and a named example. That is what a verdict looks like. {opt1} tells the story of the ending. {opt2} drops a line you have spent four lessons building. Your last sentence should answer the question, not sum up the story. A summary earns you nothing new."
+    "explanation": "{opt0} takes the objection from Lesson 3 and answers it with a pattern and a named example. That's what a verdict looks like. {opt1} tells the story of the ending. {opt2} drops a line built across four lessons. A last sentence that only sums up adds nothing."
   },
   {
     "type": "summary",
@@ -830,9 +849,6 @@ function render(){
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
-function essayParts(uptoIdx){
-  return buildIds.filter(i=>i<=uptoIdx && state.revealed[i]).map(i=>FLOW[i].part);
-}
 function renderSummary(item){
   const parts=buildIds.filter(i=>state.revealed[i]).map(i=>FLOW[i].part);
   card.innerHTML='<div class="stage-tag">'+item.label+'</div><h2>'+item.heading+'</h2>'
@@ -998,7 +1014,7 @@ function renderSort(item, gi){
   });
   const done=Object.keys(placed).length===item.items.length;
   card.innerHTML='<div class="stage-tag"><span class="chip '+tag.cls+'">'+tag.label+'</span></div>'
-    +'<div class="q-text">'+resolveNone(item.q)+'</div>'
+    +'<div class="q-text">'+item.q+'</div>'
     +'<div class="sort-prompt">Put each one in a column. Tap a card in a column to take it back.</div>'
     +'<div class="sort-cols">'+cols+'</div>'
     +(pool?'<div class="ord-pool">'+pool+'</div>':"")
@@ -1022,7 +1038,6 @@ function renderSort(item, gi){
     });
   }
 }
-function resolveNone(s){ return String(s); }
 
 function showAdded(text){
   const m=document.getElementById("added-modal");
