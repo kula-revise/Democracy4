@@ -3,7 +3,7 @@
   Kula Revise lesson engine, sunset clause skin.
 
   Mechanics never change per series. Copy this file, repaint the variables in
-  :root and body.bright, and leave everything else alone.
+  :root and body.alt, and leave everything else alone.
 
   Step types, all driven from the content JSON:
     story      animated hook: marker, place, lines that fade up one at a time
@@ -12,7 +12,7 @@
     source     a card plus an explainer or document panel with an expander
     question   multiple choice, or mode "order", or mode "sort"
     summary    the running summary on a screen of its own
-    essay      the assembled skeleton, capstone only
+    essay      the assembled skeleton, final lesson only
 
   Question text, options and explanations may use {opt0}, {opt1} and so on.
   The renderer swaps each for the letter that option carries after the shuffle,
@@ -55,28 +55,53 @@
       --sans: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       --serif: Georgia, 'Times New Roman', serif;
     }
-  /* Bright light inversion, kept but not exposed. Add class "bright" to body to switch. */
-    body.bright {
-      --paper: #F1EEE7;
-      --sheet: #FAF8F3;
-      --white: #FFFDF8;
+body.bright{
+  --paper: #E4EAF1;
+  --sheet: #EDF1F6;
+  --white: #FFFFFF;
+  --ink: #101E33;
+  --ink-soft: #566579;
+  --flame: #C15421;
+  --on-flame: #FFFFFF;
+  --leaf: #2E7A56;
+  --on-leaf: #FFFFFF;
+  --hair: rgba(16,30,51,0.16);
+  --rail: rgba(16,30,51,0.12);
+  --tint: rgba(46,122,86,0.08);
+  --tint-rule: rgba(46,122,86,0.35);
+  --slot-bg: rgba(255,255,255,0.6);
+  --ev3-bg: rgba(46,122,86,0.12);
+  --ev3-fg: #2E7A56;
+  --ok-bg: rgba(46,122,86,0.12);
+  --bad-bg: rgba(86,101,121,0.08);
+  --bad-border: #A8B2C0;
+  --btn-hover: #A8481C;
+  --start-hover: #D4DCE6;
+}
+  /* Alternate mode. The series identity always lives in :root. This is its inversion. */
+    body.alt {
+      /* Cool slate. The navy ground inverted into blue paper, not bone,
+         so it cannot be mistaken for the Black Power light mode. */
+      --paper: #E4EAF1;
+      --sheet: #F2F6FA;
+      --white: #FBFDFF;
       --ink: #14243E;
-      --ink-soft: #5A6779;
+      --ink-soft: #56657C;
       --flame: #B4501B;
-      --on-flame: #FFFDF8;
-      --leaf: #2E7D5B;
-      --on-leaf: #FFFDF8;
-      --hair: rgba(20,36,62,0.18);
-      --rail: rgba(20,36,62,0.12);
-      --tint: rgba(46,125,91,0.07);
-      --tint-rule: rgba(46,125,91,0.35);
-      --slot-bg: rgba(255,255,255,0.5);
-      --chipA-bg: #F5E2D3; --chipA-fg: #8A3A0C;
-      --chipB-bg: #DCE5F0; --chipB-fg: #33415A;
-      --chipN-bg: #E5E3DC; --chipN-fg: #4E5666;
-      --ev3-bg: #DCEDE3; --ev3-fg: #236043;
-      --ok-bg: rgba(46,125,91,0.12);
-      --bad-bg: rgba(20,36,62,0.06); --bad-border: #94A0B0;
+      --on-flame: #FBFDFF;
+      --leaf: #267051;
+      --on-leaf: #FBFDFF;
+      --hair: rgba(20,36,62,0.20);
+      --rail: rgba(20,36,62,0.13);
+      --tint: rgba(38,112,81,0.08);
+      --tint-rule: rgba(38,112,81,0.38);
+      --slot-bg: rgba(255,255,255,0.62);
+      --chipA-bg: #F6DFCE; --chipA-fg: #8A3A0C;
+      --chipB-bg: #D3DFEE; --chipB-fg: #2C3B55;
+      --chipN-bg: #DBE2EA; --chipN-fg: #4A5768;
+      --ev3-bg: #D6E8DD; --ev3-fg: #1E5A3E;
+      --ok-bg: rgba(38,112,81,0.13);
+      --bad-bg: rgba(20,36,62,0.07); --bad-border: #8C9AAC;
       --btn-hover: #96410F;
       --start-hover: #0B182B;
     }
@@ -318,9 +343,33 @@
   .modal h3 { font-family: var(--sans); font-size: 1.2rem; font-weight: 600; margin-bottom: 0.7rem; }
   .modal p { font-size: 1rem; line-height: 1.7; color: var(--ink); margin-bottom: 1.3rem; }
 
-  </style>
+  
+    /* Mode toggle. Bottom right, thumb reachable, under any modal. */
+    .mode-toggle {
+      position: fixed; bottom: 0.9rem; right: 0.9rem; z-index: 40;
+      display: flex; align-items: center; gap: 0.4rem;
+      font-family: var(--sans); font-size: 0.66rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.55rem 0.75rem; min-height: 2.4rem;
+      background: var(--sheet); color: var(--ink-soft);
+      border: 1px solid var(--hair); cursor: pointer;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+    }
+    .mode-toggle:hover { color: var(--ink); border-color: var(--flame); }
+    .mode-toggle:focus-visible { outline: 2px solid var(--flame); outline-offset: 2px; }
+    .mode-toggle svg { width: 0.9rem; height: 0.9rem; fill: none; stroke: currentColor; stroke-width: 1.6; }
+    @media print { .mode-toggle { display: none; } }
+  #kula-mode-toggle{position:fixed;bottom:1.1rem;right:1.1rem;z-index:9999;display:inline-flex;align-items:center;gap:.45em;padding:.48rem .82rem;border-radius:999px;font-family:'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;background:#17293F;color:#9FADC0;border:1px solid rgba(233,237,242,0.16);}#kula-mode-toggle svg{width:15px;height:15px;}body.bright #kula-mode-toggle{background:#EDF1F6;color:#566579;border-color:rgba(16,30,51,0.15);}</style>
 </head>
 <body>
+
+<script>
+try{ if(localStorage.getItem("kula-mode")==="alt"){ document.body.classList.add("alt"); } }catch(e){}
+</script>
+<button class="mode-toggle" id="mode-toggle" type="button" aria-pressed="false" data-native="dark">
+  <svg viewBox="0 0 24 24" aria-hidden="true" id="mode-icon"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>
+  <span id="mode-label">Light Mode</span>
+</button>
 <div class="container">
 
   <div class="top-bar hidden" id="top-bar">
@@ -330,7 +379,7 @@
 
   <div id="start-screen">
     <div class="cover">
-      <div class="cover-eyebrow">Kula Revise &middot; Coming of Democracy</div>
+      <div class="cover-eyebrow">Kula Revise &middot; Grade 12 History &middot; Coming of Democracy</div>
       <h1 class="cover-title">Getting to the Vote</h1>
       <svg class="flourish" viewBox="0 0 260 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <line class="rule-ink" x1="0" y1="2" x2="130" y2="24" stroke-width="1.4"/>
@@ -338,13 +387,12 @@
         <circle class="dot" cx="130" cy="24" r="2.4"/>
       </svg>
       <div class="cover-line">A communist's compromise. A homeland that collapsed. And nineteen million people in a queue.</div>
-      <div class="cover-sub">1993 to May 1994 &middot; Lesson 4 of 5</div>
       <div class="cover-actions">
-        <button class="btn-primary btn-begin" id="begin-btn">Begin &rarr;</button>
+        <button class="btn-primary btn-begin" id="begin-btn">Begin Lesson 4 &rarr;</button>
         <button class="btn-skip hidden" id="skip-btn"><span class="sk-t">Skip the opening if you have done this lesson before</span><span class="sk-a">&rarr;</span></button>
       </div>
     </div>
-    <div class="footer">About 27 minutes. Nine marked questions, a fact recap, and the last of your four summaries.</div>
+    <div class="footer">About 25 minutes. Lesson 4 of 5</div>
   </div>
 
   <div id="flow-screen" class="hidden">
@@ -357,8 +405,8 @@
 
   <div class="modal-back hidden" id="added-modal">
     <div class="modal">
-      <div class="modal-label">Added to your skeleton</div>
-      <p id="added-text"></p>
+      <div class="modal-label">The line this lesson gives you</div>
+      <p id="added-text"></p><p style="margin-top:.7rem;font-size:.88rem;opacity:.72;line-height:1.5;">Write this line down. You will use it in Lesson 5, where you build the whole answer.</p>
       <button class="btn-primary" id="added-close">Got it</button>
     </div>
   </div>
@@ -367,8 +415,8 @@
     <div class="modal">
       <div class="modal-label">Lesson complete</div>
       <h3>Getting to the Vote</h3>
-      <p>Click on the arrow above to continue to the next lesson.</p>
-      <button class="btn-primary" id="done-close">Got it</button>
+      <p>Tap Done to continue to Lesson 5, Build the Skeleton.</p>
+      <button class="btn-primary" id="done-close">Done</button>
     </div>
   </div>
 
@@ -403,7 +451,7 @@ const BANDS = [
   {
     "min": 67,
     "band": "Strong",
-    "desc": "Good work. Check what you missed, then start the capstone in Lesson 5."
+    "desc": "Good work. Check what you missed, then start Lesson 5."
   },
   {
     "min": 50,
@@ -413,12 +461,12 @@ const BANDS = [
   {
     "min": 34,
     "band": "Patchy",
-    "desc": "Run this again before the capstone. Focus on who compromised and what each compromise cost them."
+    "desc": "Run this again before Lesson 5. Focus on who compromised and what each compromise cost them."
   },
   {
     "min": 0,
     "band": "Start again",
-    "desc": "Restart this lesson. The capstone assumes you can name the sunset clause, the election result and the government that followed."
+    "desc": "Restart this lesson. Lesson 5 assumes you can name the sunset clause, the election result and the government that followed."
   }
 ];
 
@@ -780,7 +828,7 @@ const FLOW = [
     "type": "summary",
     "stage": "Transfer",
     "label": "Where you are",
-    "heading": "Your Running Summary",
+    "heading": "Your running summary",
     "note": "Four sentences, one for each phase. Lesson 5 turns them into a full answer."
   }
 ];
@@ -1172,6 +1220,29 @@ function showResults(){
   dm.addEventListener("click",(e)=>{ if(e.target===dm) dm.classList.add("hidden"); });
 }
 
+
+(function(){
+  var b=document.getElementById("mode-toggle"), lab=document.getElementById("mode-label"), ic=document.getElementById("mode-icon");
+  if(!b) return;
+  var SUN='<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/>';
+  var MOON='<path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/>';
+  var native=b.getAttribute("data-native");
+  function paint(){
+    var onAlt=document.body.classList.contains("alt");
+    var showing = onAlt ? (native==="dark" ? "light" : "dark") : native;
+    var offering = showing==="dark" ? "light" : "dark";
+    lab.textContent = offering==="light" ? "Light Mode" : "Dark Mode";
+    ic.innerHTML = offering==="light" ? SUN : MOON;
+    b.setAttribute("aria-pressed", onAlt ? "true" : "false");
+    b.setAttribute("aria-label", "Switch to " + (offering==="light" ? "light" : "dark") + " mode");
+  }
+  b.addEventListener("click",function(){
+    var onAlt=document.body.classList.toggle("alt");
+    try{ localStorage.setItem("kula-mode", onAlt ? "alt" : "native"); }catch(e){}
+    paint();
+  });
+  paint();
+})();
 </script>
-</body>
+<button id="kula-mode-toggle" type="button" onclick="kulaToggle()" aria-label="Switch between light and dark mode"><span id="kmt-icon"></span><span id="kmt-label"></span></button><script>(function(){var MOON="<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z'/></svg>",SUN="<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='4.2'/><path d='M12 1.6v2M12 20.4v2M3.6 12h-2M22.4 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M18.4 5.6l1.4-1.4M4.2 19.8l1.4-1.4'/></svg>",K="kula-theme";function paint(){var d=!document.body.classList.contains("bright");var ic=document.getElementById("kmt-icon"),la=document.getElementById("kmt-label");if(ic)ic.innerHTML=d?SUN:MOON;if(la)la.textContent=d?"Light mode":"Dark mode"}window.kulaToggle=function(){document.body.classList.toggle("bright");try{localStorage.setItem(K,document.body.classList.contains("bright")?"light":"dark")}catch(e){}paint()};try{if(localStorage.getItem(K)==="light")document.body.classList.add("bright")}catch(e){}paint();})();</script></body>
 </html>
