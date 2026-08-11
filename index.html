@@ -52,7 +52,7 @@
       --bad-bg: rgba(159,173,192,0.10); --bad-border: #7C8AA0;
       --btn-hover: #C55D2B;
       --start-hover: #24384F;
-      --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --sans: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       --serif: Georgia, 'Times New Roman', serif;
     }
   /* Alternate mode. The series identity always lives in :root. This is its inversion. */
@@ -338,7 +338,15 @@
     @media print { .mode-toggle { display: none; } }
   
 #kula-mode-toggle, .mode-toggle { min-height: 44px !important; padding-top: 0.6rem !important; padding-bottom: 0.6rem !important; box-sizing: border-box !important; }
-#next-btn, #begin-btn, #kdone-btn, #kretake-btn { min-height: 44px !important; }</style>
+#next-btn, #begin-btn, #kdone-btn, #kretake-btn { min-height: 44px !important; }
+    /* essaynote close (essay-free standard) */
+    .essaynote{background:rgba(228,112,58,0.10);border:1px solid rgba(228,112,58,0.34);border-left:4px solid var(--flame);border-radius:7px;padding:1rem 1.15rem 1.05rem;}
+    .essaynote .essaynote-label{font-family:var(--sans);font-size:0.64rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink);font-weight:700;margin-bottom:0.5rem;}
+    .essaynote h2{margin:0 0 0.5rem;color:var(--ink);}
+    .essaynote p{margin-bottom:0.6rem;line-height:1.6;color:var(--ink);}
+    .essaynote p:last-child{margin-bottom:0;}
+
+</style>
 </head>
 <body>
 
@@ -384,8 +392,8 @@ try{ if(localStorage.getItem("kula-mode")==="alt"){ document.body.classList.add(
 
   <div class="modal-back hidden" id="added-modal">
     <div class="modal">
-      <div class="modal-label">The line this lesson gives you</div>
-      <p id="added-text"></p><p style="margin-top:.7rem;font-size:.88rem;opacity:.72;line-height:1.5;">Write this line down. You will use it in Lesson 5, where you build the whole answer.</p>
+      <div class="modal-label"></div>
+      <p id="added-text"></p>
       <button class="btn-primary" id="added-close">Got it</button>
     </div>
   </div>
@@ -803,13 +811,7 @@ const FLOW = [
     "correct": 0,
     "explanation": "{opt0} takes the objection from Lesson 3 and answers it with a pattern and a named example. That's what a verdict looks like. {opt1} tells the story of the ending. {opt2} drops a line built across four lessons. A last sentence that only sums up adds nothing."
   },
-  {
-    "type": "summary",
-    "stage": "Transfer",
-    "label": "Where you are",
-    "heading": "Your running summary",
-    "note": "Four sentences, one for each phase. Lesson 5 turns them into a full answer."
-  }
+  { "type": "summary", "stage": "Transfer", "enlabel": "For an essay", "heading": "Remember this", "paras": ["What answers the violence is what the leaders did after each attack. The Record of Understanding restarted the talks within three months of Boipatong, and the sunset clause broke the final deadlock.", "When you argue how far the leaders\u2019 will produced democracy, this is where you win the point. The will shows most clearly in the choice to return to the table. Keep it for your conclusion."] }
 ];
 
 const DIFF = {
@@ -876,12 +878,7 @@ function render(){
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
-function renderSummary(item){
-  const parts=buildIds.filter(i=>state.revealed[i]).map(i=>FLOW[i].part);
-  card.innerHTML='<div class="stage-tag">'+item.label+'</div><h2>'+item.heading+'</h2>'
-    +'<div class="essaypanel">'+parts.map(p=>'<p>'+p+'</p>').join("")+'</div>'
-    +(item.note?'<p style="margin-top:1.1rem;color:var(--ink-soft);">'+item.note+'</p>':'');
-}
+function renderSummary(item){ card.innerHTML='<div class="essaynote"><div class="essaynote-label">'+(item.enlabel||'For an essay')+'</div><h2>'+item.heading+'</h2>'+(item.paras||[]).map(function(p){return '<p>'+p+'</p>';}).join('')+'</div>'; }
 function renderEssay(){
   const parts=buildIds.map(i=>FLOW[i].part);
   card.innerHTML=`<div class="stage-tag">${ESSAY_SCREEN.label}</div><h2>${ESSAY_SCREEN.heading}</h2>
@@ -1066,11 +1063,7 @@ function renderSort(item, gi){
   }
 }
 
-function showAdded(text){
-  const m=document.getElementById("added-modal");
-  document.getElementById("added-text").textContent=text;
-  m.classList.remove("hidden");
-}
+function showAdded(text){ /* running-argument popup removed for essay-free standard */ return; }
 function bindMemory(){
   card.querySelectorAll(".memory").forEach(box=>{
     const label=box.querySelector(".memory-label");
