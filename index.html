@@ -30,28 +30,28 @@
   /* ================= PALETTE AND TYPE ================= */
   :root {
       /* Sunset clause: dark. Ink blue ground, two accents. */
-      --paper: #101E33;     /* page ground */
-      --sheet: #17293F;     /* card sheet */
-      --white: #1D3149;     /* inner panels, sources, explanations */
-      --ink: #E9EDF2;       /* text */
-      --ink-soft: #9FADC0;
-      --flame: #E4703A;     /* accent one: navigation and emphasis */
-      --on-flame: #101E33;  /* text on a solid flame block */
-      --leaf: #86C2A4;      /* accent two: anything the learner earned */
-      --on-leaf: #101E33;   /* text on a solid leaf block */
-      --hair: rgba(233,237,242,0.18);
-      --rail: rgba(233,237,242,0.12);
-      --tint: rgba(134,194,164,0.09);
-      --tint-rule: rgba(134,194,164,0.40);
-      --slot-bg: rgba(233,237,242,0.04);
-      --chipA-bg: rgba(228,112,58,0.20); --chipA-fg: #F0A87E;
-      --chipB-bg: rgba(146,178,214,0.16); --chipB-fg: #A8C4E4;
-      --chipN-bg: rgba(233,237,242,0.07); --chipN-fg: #A9B6C6;
-      --ev3-bg: rgba(134,194,164,0.14); --ev3-fg: #86C2A4;
-      --ok-bg: rgba(134,194,164,0.16);
-      --bad-bg: rgba(159,173,192,0.10); --bad-border: #7C8AA0;
-      --btn-hover: #C55D2B;
-      --start-hover: #24384F;
+      --paper: #04161C;     /* page ground */
+      --sheet: #0A2630;     /* card sheet */
+      --white: #113842;     /* inner panels, sources, explanations */
+      --ink: #DFF6FA;       /* text */
+      --ink-soft: #A9CDD6;
+      --flame: #2AD9F0;     /* accent one: navigation and emphasis */
+      --on-flame: #04161C;  /* text on a solid flame block */
+      --leaf: #FF6B9D;      /* accent two: anything the learner earned */
+      --on-leaf: #04161C;   /* text on a solid leaf block */
+      --hair: rgba(223,246,250,0.18);
+      --rail: rgba(223,246,250,0.12);
+      --tint: rgba(255,107,157,0.09);
+      --tint-rule: rgba(255,107,157,0.40);
+      --slot-bg: rgba(223,246,250,0.04);
+      --chipA-bg: rgba(42,217,240,0.20); --chipA-fg: #8FE8F6;
+      --chipB-bg: rgba(139,176,185,0.16); --chipB-fg: #BEDDE4;
+      --chipN-bg: rgba(223,246,250,0.07); --chipN-fg: #9FC2CC;
+      --ev3-bg: rgba(255,107,157,0.14); --ev3-fg: #FF6B9D;
+      --ok-bg: rgba(147,217,138,0.18);
+      --bad-bg: rgba(255,138,110,0.12); --bad-border: #FF8A6E;
+      --btn-hover: #6FE6F6;
+      --start-hover: #0E2F38;
       --sans: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       --serif: Georgia, 'Times New Roman', serif;
     }
@@ -59,28 +59,28 @@
     body.bright {
       /* Cool slate. The navy ground inverted into blue paper, not bone,
          so it cannot be mistaken for the Black Power light mode. */
-      --paper: #E4EAF1;
-      --sheet: #F2F6FA;
-      --white: #FBFDFF;
-      --ink: #14243E;
-      --ink-soft: #56657C;
-      --flame: #B4501B;
-      --on-flame: #FBFDFF;
-      --leaf: #267051;
-      --on-leaf: #FBFDFF;
-      --hair: rgba(20,36,62,0.20);
-      --rail: rgba(20,36,62,0.13);
-      --tint: rgba(38,112,81,0.08);
-      --tint-rule: rgba(38,112,81,0.38);
+      --paper: #DCF0F4;
+      --sheet: #F6FDFE;
+      --white: #C2E3EA;
+      --ink: #08191E;
+      --ink-soft: #486268;
+      --flame: #00657A;
+      --on-flame: #F6FDFE;
+      --leaf: #B51554;
+      --on-leaf: #F6FDFE;
+      --hair: rgba(8,25,30,0.20);
+      --rail: rgba(8,25,30,0.13);
+      --tint: rgba(181,21,84,0.08);
+      --tint-rule: rgba(181,21,84,0.38);
       --slot-bg: rgba(255,255,255,0.62);
-      --chipA-bg: #F6DFCE; --chipA-fg: #8A3A0C;
-      --chipB-bg: #D3DFEE; --chipB-fg: #2C3B55;
-      --chipN-bg: #DBE2EA; --chipN-fg: #4A5768;
-      --ev3-bg: #D6E8DD; --ev3-fg: #1E5A3E;
-      --ok-bg: rgba(38,112,81,0.13);
-      --bad-bg: rgba(20,36,62,0.07); --bad-border: #8C9AAC;
-      --btn-hover: #96410F;
-      --start-hover: #0B182B;
+      --chipA-bg: #D6EFF4; --chipA-fg: #004F60;
+      --chipB-bg: #D2E6EB; --chipB-fg: #2E4A50;
+      --chipN-bg: #DCE9ED; --chipN-fg: #465C61;
+      --ev3-bg: #FBDCE7; --ev3-fg: #950F44;
+      --ok-bg: rgba(42,99,53,0.13);
+      --bad-bg: rgba(165,52,27,0.09); --bad-border: #A5341B;
+      --btn-hover: #004F60;
+      --start-hover: #03121A;
     }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   .container { max-width: 720px; margin: 0 auto; }
@@ -314,7 +314,7 @@
   .btn-small:disabled { opacity: 0.35; cursor: not-allowed; }
 
   /* ================= POP UPS ================= */
-  .modal-back { position: fixed; inset: 0; background: rgba(8,16,28,0.72); display: flex; align-items: center; justify-content: center; padding: 1.2rem; z-index: 50; }
+  .modal-back { position: fixed; inset: 0; background: rgba(4,22,28,0.72); display: flex; align-items: center; justify-content: center; padding: 1.2rem; z-index: 50; }
   .modal { background: var(--sheet); border-top: 3px solid var(--flame); max-width: 24rem; width: 100%; padding: 1.6rem 1.5rem 1.5rem; text-align: center; }
   .modal-label { font-family: var(--sans); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--leaf); font-weight: 600; margin-bottom: 0.7rem; }
   .modal h3 { font-family: var(--sans); font-size: 1.2rem; font-weight: 600; margin-bottom: 0.7rem; }
@@ -340,7 +340,7 @@
 #kula-mode-toggle, #kula-mode-toggle { min-height: 44px !important; padding-top: 0.6rem !important; padding-bottom: 0.6rem !important; box-sizing: border-box !important; } /* kula: mobile tap targets. Every control a learner is expected to tap reaches 44px on the short axis at 360px. */ .evtoggle, .term-btn, .toggle-btn, #skip-btn, #chk, #cont, summary, details > summary { min-height: 44px !important; display: flex !important; align-items: center !important; box-sizing: border-box !important; } summary, details > summary { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; } #next-btn, #finish-btn, #cap-advance, #kdone-btn, #kretake-btn, #cont, #chk, #begin-btn, #back-btn, #redo-btn, #restart-btn, #skip-btn, .btn-primary, .btn-secondary, .btn-small { position: relative; z-index: 10000; } body { padding-bottom: 5.25rem !important; }
 #next-btn, #begin-btn, #kdone-btn, #kretake-btn { min-height: 44px !important; }
     /* essaynote close (essay-free standard) */
-    .essaynote{background:rgba(228,112,58,0.10);border:1px solid rgba(228,112,58,0.34);border-left:4px solid var(--flame);border-radius:7px;padding:1rem 1.15rem 1.05rem;}
+    .essaynote{background:rgba(42,217,240,0.10);border:1px solid rgba(42,217,240,0.34);border-left:4px solid var(--flame);border-radius:7px;padding:1rem 1.15rem 1.05rem;}
     .essaynote .essaynote-label{font-family:var(--sans);font-size:0.64rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink);font-weight:700;margin-bottom:0.5rem;}
     .essaynote h2{margin:0 0 0.5rem;color:var(--ink);}
     .essaynote p{margin-bottom:0.6rem;line-height:1.6;color:var(--ink);}
